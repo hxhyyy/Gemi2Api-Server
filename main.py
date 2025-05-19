@@ -331,8 +331,8 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 		# 5. 移除 <![CDATA[...]]> 或 <\![CDATA[...]]> 包装，保留内部内容
 		reply_text = re.sub(r"<\\?!\[CDATA\[(.*?)\]\]>", r"\1", reply_text, flags=re.DOTALL)
 		# 6. 格式化 apply_diff 相关标签，确保每个标签都在单独一行
-		# 6.1 确保 <apply_diff> 标签后换行
-		reply_text = re.sub(r'(<apply_diff>)([^\n])', r'\1\n\2', reply_text)
+		# 6.1 确保 <apply_diff> 标签前换行
+		reply_text = re.sub(r'([^\n])(<apply_diff>)', r'\1\n\2', reply_text)
 		# 6.2 确保 <path> 标签前换行
 		reply_text = re.sub(r'([^\n])(<path>)', r'\1\n\2', reply_text)
 		# 6.3 确保 </path> 标签后换行
@@ -341,9 +341,8 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 		reply_text = re.sub(r'([^\n])(<diff>)', r'\1\n\2', reply_text)
 		# 6.5 确保 </diff> 标签后换行
 		reply_text = re.sub(r'(</diff>)([^\n])', r'\1\n\2', reply_text)
-		# 6.6 确保 <<<<<<< 前后换行
+		# 6.6 确保 <<<<<<< 前换行
 		reply_text = re.sub(r'([^\n])(<<<<<<< )', r'\1\n\2', reply_text)
-		reply_text = re.sub(r'(<<<<<<< )([^\n])', r'\1\n\2', reply_text)
 		# 6.7 确保 SEARCH :start_line: 在单独一行
 		reply_text = re.sub(r'([^\n])(SEARCH :start_line:)', r'\1\n\2', reply_text)
 		
