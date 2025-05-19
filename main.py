@@ -339,8 +339,8 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 		reply_text = re.sub(r'(</path>)([^\n])', r'\1\n\2', reply_text)
 		# 6.4 确保 <diff> 标签前换行
 		reply_text = re.sub(r'([^\n])(<diff>)', r'\1\n\2', reply_text)
-		# 6.5 确保 <diff> 标签后换行
-		reply_text = re.sub(r'(<diff>)([^\n])', r'\1\n\2', reply_text)
+		# 6.5 确保 </diff> 标签后换行
+		reply_text = re.sub(r'(</diff>)([^\n])', r'\1\n\2', reply_text)
 		# 6.6 确保 <<<<<<< 前后换行
 		reply_text = re.sub(r'([^\n])(<<<<<<< )', r'\1\n\2', reply_text)
 		reply_text = re.sub(r'(<<<<<<< )([^\n])', r'\1\n\2', reply_text)
