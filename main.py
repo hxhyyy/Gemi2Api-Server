@@ -319,8 +319,11 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 			logger.warning("Empty response received from Gemini")
 			reply_text = "服务器返回了空响应。请检查 Gemini API 凭据是否有效。"
 
-		# Regex repair: 去除转义反斜杠，仅针对 <、>、/，不影响路径中的 \
-		reply_text = re.sub(r"\\([<>/])", r"\1", reply_text)
+		# Regex repair:
+		# 1. 去除转义反斜杠，仅针对 <、>、/、_
+		reply_text = re.sub(r"\\([<>/_])", r"\1", reply_text)
+		# 2. 删除形如 <ctrl95> 等控制标签
+		reply_text = re.sub(r"<ctrl\d+>", "", reply_text)
 
 		# 创建响应对象
 		completion_id = f"chatcmpl-{uuid.uuid4()}"
