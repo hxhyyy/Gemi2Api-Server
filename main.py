@@ -324,8 +324,8 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 		reply_text = re.sub(r"\\([<>/_])", r"\1", reply_text)
 		# 2. 删除形如 <ctrl95> 等控制标签
 		reply_text = re.sub(r"<ctrl\d+>", "", reply_text)
-		# 3. 移除自动嵌入的 Google 搜索链接
-		reply_text = re.sub(r"https://www\.google\.com/search\?q=\S+", "", reply_text)
+		# 3. 移除自动嵌入的 Google 搜索链接 (修正 \S+ 过度匹配问题，避免吞掉 markdown 的 ')' 等)
+		reply_text = re.sub(r"https://www\.google\.com/search\?q=[^\s)]+", "", reply_text)
 
 		# 创建响应对象
 		completion_id = f"chatcmpl-{uuid.uuid4()}"
