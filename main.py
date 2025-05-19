@@ -346,8 +346,10 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 		# 6.7 确保 SEARCH :start_line: 在单独一行
 		reply_text = re.sub(r'([^\n])(:start_line:)', r'\1\n\2', reply_text)
 		
-		# 7. 删除所有的 ``` 符号
-		reply_text = reply_text.replace("```", "")
+		# 7. 处理所有的 ``` 符号
+		reply_text = re.sub(r'(\n\s*)+(?=```)', r'\n', reply_text)  # 删除 ``` 前的空白行
+		reply_text = re.sub(r'(?<=```)(\s*\n)+', r'\n', reply_text)  # 删除 ``` 后的空白行
+		reply_text = re.sub(r'^[ \t]*```[ \t]*(?:\r?\n|$)', '', reply_text, flags=re.MULTILINE) # 删除只包含```的行
 		# 8. 删除 > > > > > > > 之间有空格就删除
 		reply_text = re.sub(r'>\s+(?=>)', '>', reply_text)
 
