@@ -344,7 +344,7 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 		# 6.6 确保 <<<<<<< 前换行
 		reply_text = re.sub(r'([^\n])(<<<<<<< )', r'\1\n\2', reply_text)
 		# 6.7 确保 SEARCH :start_line: 在单独一行
-		reply_text = re.sub(r'([^\n])(SEARCH :start_line:)', r'\1\n\2', reply_text)
+		reply_text = re.sub(r'([^\n])(:start_line:)', r'\1\n\2', reply_text)
 		
 		# 7. 删除所有的 ``` 符号
 		reply_text = reply_text.replace("```", "")
