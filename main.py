@@ -42,6 +42,7 @@ gemini_client = None
 SECURE_1PSID = os.environ.get("SECURE_1PSID", "")
 SECURE_1PSIDTS = os.environ.get("SECURE_1PSIDTS", "")
 API_KEY = os.environ.get("API_KEY", "")
+logger.info(f"123789")
 
 # Print debug info at startup
 if not SECURE_1PSID or not SECURE_1PSIDTS:
