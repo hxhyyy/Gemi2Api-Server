@@ -325,11 +325,30 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 		# 2. 删除形如 <ctrl95> 等控制标签
 		reply_text = re.sub(r"<ctrl\d+>", "", reply_text)
 		# 3. 移除自动嵌入的 Google 搜索链接 (修正 \S+ 过度匹配问题，避免吞掉 markdown 的 ')' 等)
-		reply_text = re.sub(r"https://www\.google\.com/search\?q=", "", reply_text)
-        # 4. 删除连续的 '##' 字符串
+		reply_text = re.sub(r"https://www\.google\.com/search\?q=[^\s)]+", "", reply_text)
+		# 4. 删除连续的 '##' 字符串
 		reply_text = reply_text.replace("##", "")
-        # 5. 移除 <![CDATA[...]]> 或 <![CDATA[...]]> 包装，保留内部内容
-		reply_text = re.sub(r"<!\[CDATA\[(.*?)\]\]>", r"\1", reply_text, flags=re.DOTALL)
+		# 5. 移除 <![CDATA[...]]> 或 <\![CDATA[...]]> 包装，保留内部内容
+		reply_text = re.sub(r"<\\?!\[CDATA\[(.*?)\]\]>", r"\1", reply_text, flags=re.DOTALL)
+		# 6. 格式化 apply_diff 相关标签，确保每个标签都在单独一行
+		# 6.1 确保 <apply_diff> 标签后换行
+		reply_text = re.sub(r'(<apply_diff>)([^\n])', r'\1\n\2', reply_text)
+		# 6.2 确保 <path> 标签前换行
+		reply_text = re.sub(r'([^\n])(<path>)', r'\1\n\2', reply_text)
+		# 6.3 确保 </path> 标签后换行
+		reply_text = re.sub(r'(</path>)([^\n])', r'\1\n\2', reply_text)
+		# 6.4 确保 <diff> 标签前换行
+		reply_text = re.sub(r'([^\n])(<diff>)', r'\1\n\2', reply_text)
+		# 6.5 确保 <diff> 标签后换行
+		reply_text = re.sub(r'(<diff>)([^\n])', r'\1\n\2', reply_text)
+		# 6.6 确保 <<<<<<< 前后换行
+		reply_text = re.sub(r'([^\n])(<<<<<<< )', r'\1\n\2', reply_text)
+		reply_text = re.sub(r'(<<<<<<< )([^\n])', r'\1\n\2', reply_text)
+		# 6.7 确保 SEARCH :start_line: 在单独一行
+		reply_text = re.sub(r'([^\n])(SEARCH :start_line:)', r'\1\n\2', reply_text)
+		
+		# 7. 删除所有的 ``` 符号
+		reply_text = reply_text.replace("```", "")
 
 		# 创建响应对象
 		completion_id = f"chatcmpl-{uuid.uuid4()}"
