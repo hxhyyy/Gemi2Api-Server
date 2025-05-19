@@ -14,6 +14,7 @@ from typing import List, Optional, Dict, Any, Union
 import time
 import uuid
 import logging
+import re
 
 from gemini_webapi import GeminiClient, set_log_level
 from gemini_webapi.constants import Model
@@ -318,9 +319,8 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 			logger.warning("Empty response received from Gemini")
 			reply_text = "服务器返回了空响应。请检查 Gemini API 凭据是否有效。"
 
-		# Regex repair
-		reply_text = reply_text.replace("\\<thinking\\>", "<thinking>")
-		reply_text = reply_text.replace("\\</thinking\\>", "</thinking>")
+		# Regex repair: 去除转义反斜杠，仅针对 <、>、/，不影响路径中的 \
+		reply_text = re.sub(r"\\([<>/])", r"\1", reply_text)
 
 		# 创建响应对象
 		completion_id = f"chatcmpl-{uuid.uuid4()}"
