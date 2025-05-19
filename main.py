@@ -320,8 +320,8 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 			reply_text = "服务器返回了空响应。请检查 Gemini API 凭据是否有效。"
 
 		# Regex repair:
-		# 1. 去除转义反斜杠，仅针对 <、>、/、_、*
-		reply_text = re.sub(r"\\([<>/_*])", r"\1", reply_text)
+		# 1. 去除转义反斜杠，仅针对 <、>、/、_、*、=
+		reply_text = re.sub(r"\\([<>/_*=])", r"\1", reply_text)
 		# 2. 删除形如 <ctrl95> 等控制标签
 		reply_text = re.sub(r"<ctrl\d+>", "", reply_text)
 		# 3. 移除自动嵌入的 Google 搜索链接 (修正 \S+ 过度匹配问题，避免吞掉 markdown 的 ')' 等)
