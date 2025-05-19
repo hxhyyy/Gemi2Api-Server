@@ -318,6 +318,10 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 			logger.warning("Empty response received from Gemini")
 			reply_text = "服务器返回了空响应。请检查 Gemini API 凭据是否有效。"
 
+		# Regex repair
+		reply_text = reply_text.replace("\\<thinking\\>", "<thinking>")
+		reply_text = reply_text.replace("\\</thinking\\>", "</thinking>")
+
 		# 创建响应对象
 		completion_id = f"chatcmpl-{uuid.uuid4()}"
 		created_time = int(time.time())
