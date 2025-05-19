@@ -349,6 +349,8 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 		
 		# 7. 删除所有的 ``` 符号
 		reply_text = reply_text.replace("```", "")
+		# 8. 删除 > > > > > > > 之间有空格就删除
+		reply_text = re.sub(r'>\s+>', '>>', reply_text)
 
 		# 创建响应对象
 		completion_id = f"chatcmpl-{uuid.uuid4()}"
