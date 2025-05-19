@@ -328,8 +328,8 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 		reply_text = re.sub(r"https://www\.google\.com/search\?q=", "", reply_text)
         # 4. 删除连续的 '##' 字符串
 		reply_text = reply_text.replace("##", "")
-        # 5. 移除 <![CDATA[...]]> 或 <\![CDATA[...]]> 包装，保留内部内容
-		reply_text = re.sub(r"<\\?!\[CDATA\[(.*?)\]\]>", r"\1", reply_text, flags=re.DOTALL)
+        # 5. 移除 <![CDATA[...]]> 或 <![CDATA[...]]> 包装，保留内部内容
+		reply_text = re.sub(r"<!\[CDATA\[(.*?)\]\]>", r"\1", reply_text, flags=re.DOTALL)
 
 		# 创建响应对象
 		completion_id = f"chatcmpl-{uuid.uuid4()}"
