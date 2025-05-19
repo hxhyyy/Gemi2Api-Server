@@ -325,7 +325,7 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 		# 2. 删除形如 <ctrl95> 等控制标签
 		reply_text = re.sub(r"<ctrl\d+>", "", reply_text)
 		# 3. 移除自动嵌入的 Google 搜索链接 (修正 \S+ 过度匹配问题，避免吞掉 markdown 的 ')' 等)
-		reply_text = re.sub(r"https://www\.google\.com/search\?q=[^\s)]+", "", reply_text)
+		reply_text = re.sub(r"https://www\.google\.com/search\?q=", "", reply_text)
         # 4. 删除连续的 '##' 字符串
 		reply_text = reply_text.replace("##", "")
         # 5. 移除 <![CDATA[...]]> 或 <\![CDATA[...]]> 包装，保留内部内容
