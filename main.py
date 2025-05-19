@@ -42,7 +42,6 @@ gemini_client = None
 SECURE_1PSID = os.environ.get("SECURE_1PSID", "")
 SECURE_1PSIDTS = os.environ.get("SECURE_1PSIDTS", "")
 API_KEY = os.environ.get("API_KEY", "")
-logger.info(f"123789")
 
 # Print debug info at startup
 if not SECURE_1PSID or not SECURE_1PSIDTS:
@@ -56,7 +55,7 @@ else:
 	# Only log the first few characters for security
 	logger.info(f"Credentials found. SECURE_1PSID starts with: {SECURE_1PSID[:5]}...")
 	logger.info(f"Credentials found. SECURE_1PSIDTS starts with: {SECURE_1PSIDTS[:5]}...")
-
+	logger.info(f"123789")
 if not API_KEY:
 	logger.warning("⚠️ API_KEY is not set or empty! API authentication will not work.")
 	logger.warning("Make sure API_KEY is correctly set in your .env file or environment.")
