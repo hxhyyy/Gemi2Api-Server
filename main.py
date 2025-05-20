@@ -186,25 +186,16 @@ def map_model_name(openai_model_name: str) -> Model:
 		if openai_model_name.lower() in model_name.lower():
 			return m
 
-	# 如果找不到匹配项，使用默认映射
-	model_keywords = {
-		"gemini-pro": ["pro", "2.0"],
-		"gemini-pro-vision": ["vision", "pro"],
-		"gemini-flash": ["flash", "2.0"],
-		"gemini-1.5-pro": ["1.5", "pro"],
-		"gemini-1.5-flash": ["1.5", "flash"],
-	}
-
-	# 根据关键词匹配
-	keywords = model_keywords.get(openai_model_name, ["pro"])  # 默认使用pro模型
-
-	for m in Model:
-		model_name = m.model_name if hasattr(m, "model_name") else str(m)
-		if all(kw.lower() in model_name.lower() for kw in keywords):
-			return m
-
-	# 如果还是找不到，返回第一个模型
-	return next(iter(Model))
+	# 如果直接匹配失败，使用默认模型
+	logger.info(f"No direct model match found for '{openai_model_name}', using default model")
+	
+	# 尝试找到 flash 模型作为默认值（通常速度更快）
+	try:
+		return next(m for m in Model if "flash" in (m.model_name.lower() if hasattr(m, "model_name") else str(m).lower()))
+	except StopIteration:
+		# 如果没有找到包含 flash 的模型，返回第一个可用模型
+		logger.warning("No flash model found, falling back to first available model")
+		return next(iter(Model))
 
 
 # Prepare conversation history from OpenAI messages format
@@ -264,7 +255,7 @@ async def get_gemini_client():
 	if gemini_client is None:
 		try:
 			gemini_client = GeminiClient(SECURE_1PSID, SECURE_1PSIDTS)
-			await gemini_client.init(timeout=300, auto_refresh=True)
+			await gemini_client.init(timeout=30, auto_close=False, close_delay=300, auto_refresh=True)
 		except Exception as e:
 			logger.error(f"Failed to initialize Gemini client: {str(e)}")
 			raise HTTPException(status_code=500, detail=f"Failed to initialize Gemini client: {str(e)}")
@@ -278,7 +269,7 @@ async def create_chat_completion(request: ChatCompletionRequest, api_key: str = 
 		global gemini_client
 		if gemini_client is None:
 			gemini_client = GeminiClient(SECURE_1PSID, SECURE_1PSIDTS)
-			await gemini_client.init(timeout=300, auto_refresh=True)
+			await gemini_client.init(timeout=30, auto_close=False, close_delay=300, auto_refresh=True)
 			logger.info("Gemini client initialized successfully")
 
 		# 转换消息为对话格式
